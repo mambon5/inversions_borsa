@@ -74,3 +74,31 @@
 
 1. Si un mercat obra a les hores *am* vol dir que obra dilluns, si obra a les hores *pm* vol dir que obra diumenge. Totes les hores de tancar són per divendres.
 2. Tot actiu fa una pausa de la hora de tancada del dia actual, fins a la hora d'obertura del dia següent. La pausa que és llista és si és adicional a aquesta.
+
+# Considereant en invertir
+
+## 2 abril 2023
+
+1. Samsung, puja en els últims *15 dies* un **11%** i en els últims *6 mesos* puja un **30%**
+2. Més en TESLA, però puja continuament desde els últimes *15 dies* un **23%**, però en *l'últim any* perd un **42%** del valor
+3. Phillips, però baixa en els *útlims 2 anys* un **50%** del valor. En l'*última setmana* puja un **11%**
+4. Juventus: *últims 4 mesos* puja un **15%**. Últims *4 dies* puja un **10%**
+5. Man United: puja de cop, en els últims *6 mesos*, un **65%**, *ultim mes* puja un **9%**, els últims dies **baixa** esperar uns dies per comprar
+6. Xiaomi: *últims 6 mesos* puja un **38%**, últims *15 dies* puja un **10%**
+7. Més en Nvidia: puja contínuament desde els últims *6 mesos* un **130%**
+8. Més en Riot: puja continuament en els últims *3 mesos* un **200%**
+9. Més en Credit Suisse, puja en els últims *10 dies* un **10%**, en els últims *6 mesos* ha perdunt un **80%** del valor.
+10. Més en Honda que puja continuament (amb pics i valls) en els últims *6 mesos* un **22%**
+
+### Cryptos:
+1. Bitcoin
+2. Ethereum
+3. Cardano
+
+### Jo invertiria en:
+
+1. Phillips 150€
+2. Manchester united, en 3 dies.
+3. Juventus 100€
+4. Samsung 150€
+5. 50€ en Tesla
