@@ -1,3 +1,8 @@
+"""
+how the open price is calculated? > https://finlib.in/open-price-calculated/
+
+"""
+
 import yfinance as yfin
 import pandas_datareader as pdr
 import pandas as pd
@@ -6,21 +11,6 @@ import matplotlib.pyplot as plt
 
 # how to get data from yahoo.
 # check this tutorial > https://www.geeksforgeeks.org/get-financial-data-from-yahoo-finance-with-python/
-
-def main():
-
-    ticks = ["ADA-USD",  "RIOT", "005930.KS", "PHIA.AS", "TSLA", "HMC", "LGL", "JUVE.MI", "MANU", "NVDA"]
-    print("my stocks:")
-    for tick in ticks:
-        stock = yfin.Ticker(tick)
-        print("stock: {}, last price: {}".format(stock.info["longName"], stock.fast_info.last_price ))
-
-
-    ticks = ["1810.HK", "GOOG", "BTC-USD"]
-    print("\ninterested in stocks:")
-    for tick in ticks:
-        stock = yfin.Ticker(tick)
-        print("stock: {}, last price: {}".format(stock.info["longName"], stock.fast_info.last_price ))
 
 
 def historic_yfin(ticker, period="7d", interval="1m", start=None, end=None):
@@ -45,7 +35,10 @@ def historic_yfin(ticker, period="7d", interval="1m", start=None, end=None):
         stock_historical = stock.history(start=start, end=end, interval=interval)
 
     print(stock_historical)
-    plot_open(stock_historical)
+    plot_onecol(stock_historical, ticker, "Open", period, interval)
+    plot_onecol(stock_historical, ticker, "Close", period, interval)
+    #plot_onecol(stock_historical, ticker, "High", period, interval)
+    #plot_onecol(stock_historical, ticker, "Low", period, interval)
     return stock_historical
 
 
@@ -58,6 +51,7 @@ def historic_pandas():
     end = dt.datetime(2020, 12, 31)
     
     data = pdr.get_data_yahoo(ticker, start, end)
+    
     print(data)
 
 def plot_values(value, time=None,  title="", pandas_values=False):
@@ -75,14 +69,41 @@ def plot_values(value, time=None,  title="", pandas_values=False):
     plt.ylabel('y - values')
     
     # giving a title to my graph
-    plt.title('Stock values {}'.format(title))
-    
+    plt.title('Stock {}'.format(title))
+
+    # Rotates X-Axis Ticks by 45-degrees
+    plt.xticks(rotation = 75) 
+    # save plot
+    plt.savefig('plots/plot_{}.png'.format(title))
+
     # function to show the plot
-    plt.show()
+    # plt.show()
+    plt.close()
+
 
     
 
-def plot_open(historic):
-    y = pd.to_numeric(historic["Open"])    
-    plot_values(y, title="Open values", pandas_values=True)
+
+def plot_onecol(historic, tickname="", type="Open", period="", interval=""):
+    y = pd.to_numeric(historic[type])    
+    plot_values(y, title="{} {} values per: {} int: {}".format(tickname, type, period, interval), pandas_values=True)
     
+
+def main(period="7d", interval="1m"):
+
+    ticks = ["ADA-USD",  "RIOT", "005930.KS", "PHIA.AS", "TSLA", "HMC", "LGL", "JUVE.MI", "MANU", "NVDA"]
+    print("my stocks:")
+    for tick in ticks:
+        stock = yfin.Ticker(tick)
+        print("stock: {}, last price: {}".format(stock.info["longName"], stock.fast_info.last_price ))
+        historic_yfin(tick, period=period, interval=interval, start=None, end=None)
+
+
+
+    ticks = ["1810.HK", "GOOG", "BTC-USD"]
+    print("\ninterested in stocks:")
+    for tick in ticks:
+        stock = yfin.Ticker(tick)
+        print("stock: {}, last price: {}".format(stock.info["longName"], stock.fast_info.last_price ))
+        historic_yfin(tick, period=period, interval=interval, start=None, end=None)
+

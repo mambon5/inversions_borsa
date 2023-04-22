@@ -1,0 +1,34 @@
+2023-04-22T13:43:31,530 Using pip 23.1.1 from /home/roma/.local/lib/python3.10/site-packages/pip (python 3.10)
+2023-04-22T13:43:31,532 Defaulting to user installation because normal site-packages is not writeable
+2023-04-22T13:43:31,652 Created temporary directory: /tmp/pip-build-tracker-s6hr91av
+2023-04-22T13:43:31,652 Initialized build tracking at /tmp/pip-build-tracker-s6hr91av
+2023-04-22T13:43:31,652 Created build tracker: /tmp/pip-build-tracker-s6hr91av
+2023-04-22T13:43:31,652 Entered build tracker: /tmp/pip-build-tracker-s6hr91av
+2023-04-22T13:43:31,653 Created temporary directory: /tmp/pip-install-cmpohoil
+2023-04-22T13:43:31,653 Created temporary directory: /tmp/pip-ephem-wheel-cache-_lb7wy33
+2023-04-22T13:43:31,660 1 location(s) to search for versions of afterhours:
+2023-04-22T13:43:31,660 * https://pypi.org/simple/afterhours/
+2023-04-22T13:43:31,660 Fetching project page and analyzing links: https://pypi.org/simple/afterhours/
+2023-04-22T13:43:31,660 Getting page https://pypi.org/simple/afterhours/
+2023-04-22T13:43:31,661 Found index url https://pypi.org/simple/
+2023-04-22T13:43:31,662 Looking up "https://pypi.org/simple/afterhours/" in the cache
+2023-04-22T13:43:31,662 Request header has "max_age" as 0, cache bypassed
+2023-04-22T13:43:31,663 Starting new HTTPS connection (1): pypi.org:443
+2023-04-22T13:43:31,874 https://pypi.org:443 "GET /simple/afterhours/ HTTP/1.1" 304 0
+2023-04-22T13:43:31,883 Fetched page https://pypi.org/simple/afterhours/ as application/vnd.pypi.simple.v1+json
+2023-04-22T13:43:31,884   Found link https://files.pythonhosted.org/packages/cd/df/fb0df9038a4fb8081361d9cb5f168ff96049220d8d59817c957977f0ab9a/afterhours-0.2.1.tar.gz (from https://pypi.org/simple/afterhours/), version: 0.2.1
+2023-04-22T13:43:31,884 Skipping link: not a file: https://pypi.org/simple/afterhours/
+2023-04-22T13:43:31,890 Given no hashes to check 1 links for project 'afterhours': discarding no candidates
+2023-04-22T13:43:31,896 Using cached wheel link: file:///home/roma/.cache/pip/wheels/55/6c/1e/d00159e1ddb009ee2855c2c154ba609db47f56f3b970400130/afterhours-0.2.1-py3-none-any.whl
+2023-04-22T13:43:31,896 Collecting afterhours
+2023-04-22T13:43:31,896   Using cached afterhours-0.2.1-py3-none-any.whl
+2023-04-22T13:43:31,900   Added afterhours from file:///home/roma/.cache/pip/wheels/55/6c/1e/d00159e1ddb009ee2855c2c154ba609db47f56f3b970400130/afterhours-0.2.1-py3-none-any.whl to build tracker '/tmp/pip-build-tracker-s6hr91av'
+2023-04-22T13:43:31,900   Removed afterhours from file:///home/roma/.cache/pip/wheels/55/6c/1e/d00159e1ddb009ee2855c2c154ba609db47f56f3b970400130/afterhours-0.2.1-py3-none-any.whl from build tracker '/tmp/pip-build-tracker-s6hr91av'
+2023-04-22T13:43:31,901 Created temporary directory: /tmp/pip-unpack-4nmcvv73
+2023-04-22T13:43:32,143 Installing collected packages: afterhours
+
+2023-04-22T13:43:32,210 Successfully installed afterhours-0.2.1
+2023-04-22T13:43:32,214 Remote version of pip: 23.1.1
+2023-04-22T13:43:32,215 Local version of pip:  23.1.1
+2023-04-22T13:43:32,215 Was pip installed by pip? True
+2023-04-22T13:43:32,215 Removed build tracker: '/tmp/pip-build-tracker-s6hr91av'
