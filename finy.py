@@ -8,6 +8,8 @@ import pandas_datareader as pdr
 import pandas as pd
 import datetime as dt
 import matplotlib.pyplot as plt
+import numpy as np
+from scipy import stats
 
 # how to get data from yahoo.
 # check this tutorial > https://www.geeksforgeeks.org/get-financial-data-from-yahoo-finance-with-python/
@@ -81,15 +83,39 @@ def plot_values(value, time=None,  title="", pandas_values=False):
     plt.close()
 
 
-    
-
-
 def plot_onecol(historic, tickname="", type="Open", period="", interval=""):
     y = pd.to_numeric(historic[type])    
     plot_values(y, title="{} {} values per: {} int: {}".format(tickname, type, period, interval), pandas_values=True)
     
 
-def main(period="7d", interval="1m"):
+def simple_slope(historic, type="Open") :
+    y = pd.to_numeric(historic[type])    
+    slope = y[-1]  - y[0]
+    return slope
+
+def linreg_slope(historic, type="Open") :
+    y = pd.to_numeric(historic[type])   
+    x = range(0,len(y))
+    res = stats.linregress(x,y)
+    # x= map(lambda a: a.strftime("%d/%m/%y"), x)
+    return [y, res]
+
+def plot_linregress(x, y, res):
+    plt.plot(x, y, 'o', label='original data')
+    plt.plot(x, res.intercept + res.slope*x, 'r', label='fitted line')
+    plt.legend()
+    plt.show()
+
+def do_linreg():
+    historic = historic_yfin("RIOT", period="5d", interval="1d")
+    linreg = linreg_slope(historic, type="Open")
+    y = linreg[0]
+    res = linreg[1]
+    print("linear regression slope: {}".format(res.slope))
+    print("lin reg percentual slope: {}%".format( round(100*res.slope/y[0],2 )))
+    plot_linregress(range(0,len(y)), y, res)
+
+def main(period="1m", interval="5d"):
 
     ticks = ["ADA-USD",  "RIOT", "005930.KS", "PHIA.AS", "TSLA", "HMC", "LGL", "JUVE.MI", "MANU", "NVDA"]
     print("my stocks:")
@@ -106,4 +132,5 @@ def main(period="7d", interval="1m"):
         stock = yfin.Ticker(tick)
         print("stock: {}, last price: {}".format(stock.info["longName"], stock.fast_info.last_price ))
         historic_yfin(tick, period=period, interval=interval, start=None, end=None)
+
 

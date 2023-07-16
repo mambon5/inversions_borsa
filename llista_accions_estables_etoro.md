@@ -1,4 +1,17 @@
+# Using yfinance
+
+## If not working
+
+This is a suggested solution > https://github.com/ranaroussi/yfinance/issues/1484 uprade the yfinance version.
+
+
+
 # WINNERS
+
+## What should be the base value of a stock?
+
+We can consider the "real" or "base" value of a stock, to be the daily mean over the last 2 years. Because we are not interested in longer returns, we will invest monthly or weekly, and a 2 year period
+should provide a stable enough base value.
 
 ## 6 month trend suggests increase
 - tesla
