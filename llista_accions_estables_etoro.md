@@ -1,10 +1,56 @@
+- [Using yfinance](#using-yfinance)
+  - [If not working](#if-not-working)
+- [Simple investing strategy](#simple-investing-strategy)
+  - [Indices](#indices)
+- [WINNERS](#winners)
+  - [What should be the base value of a stock?](#what-should-be-the-base-value-of-a-stock)
+  - [6 month trend suggests increase](#6-month-trend-suggests-increase)
+  - [around global minimum:](#around-global-minimum)
+  - [slow down, sudden ups](#slow-down-sudden-ups)
+  - [slow down trend last 6 months](#slow-down-trend-last-6-months)
+  - [slow up, last 3 years](#slow-up-last-3-years)
+  - [around global maximum](#around-global-maximum)
+  - [1 week trend up](#1-week-trend-up)
+- [LOOSERS](#loosers)
+  - [around global minimum:](#around-global-minimum-1)
+  - [down trend last month](#down-trend-last-month)
+  - [3 year, pretty stable, local minimum](#3-year-pretty-stable-local-minimum)
+  - [3year trend down, 6 month super down trend](#3year-trend-down-6-month-super-down-trend)
+  - [6 month global maximum](#6-month-global-maximum)
+  - [6 month stable](#6-month-stable)
+- [Market hours](#market-hours)
+- [Considereant en invertir](#considereant-en-invertir)
+  - [2 abril 2023](#2-abril-2023)
+    - [Cryptos:](#cryptos)
+    - [Jo invertiria en:](#jo-invertiria-en)
+
+
 # Using yfinance
 
 ## If not working
 
 This is a suggested solution > https://github.com/ranaroussi/yfinance/issues/1484 uprade the yfinance version.
 
+# Simple investing strategy
 
+1. Compute the daily density distributions for the last 6 Months and 1 Year. See if currently the stock price is around the Minimum, Max, or Median of that density.
+
+2. Compute the trend for that period using a linear regression.
+3. Check this trend by taking a look at the main indices, and confirm the trend of the stock follows that of the indices. If it doesn't, then the period trend is uncertain.
+4. Compute the instanteneous trend of the stock by running a linear regression of the last 5 days of the stock price.
+5. Invest in those stocks that have:
+   1. Are around the minimum or the mean of the density distribution.
+   2. A non negative trend for the period.
+   3. A non negative instantaneous trend.
+
+## Indices
+
+Indices include:
+
+1. NASDAQ
+2. DJ30
+3. SPX500
+4. GER40
 
 # WINNERS
 

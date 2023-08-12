@@ -15,7 +15,16 @@ from scipy import stats
 # check this tutorial > https://www.geeksforgeeks.org/get-financial-data-from-yahoo-finance-with-python/
 
 
-def historic_yfin(ticker, period="7d", interval="1m", start=None, end=None):
+def ecdf(data) :
+    """
+    define empyrical CDF function, where you can input a number
+    
+    :param data: must be an array of numbers   
+    """
+    x = lambda a : len([1 for i in data if i <= a])/len(data)
+    return x
+
+def download_historic_yfin(ticker, period="1mo", interval="1d", start=None, end=None):
     """
     Getting historical stock data using the yfinance library.
         - Remember we now use this aapl ticker object for almost everything- calling various methods on it.
@@ -28,21 +37,29 @@ def historic_yfin(ticker, period="7d", interval="1m", start=None, end=None):
         :param interval: valid intervals include: '1m', '2m', '5m', '15m', '30m', '60m', '90m', '1h', '1d', '5d', '1wk', '1mo', '3mo'
 
     """
-
-    # 
     stock= yfin.Ticker(ticker)
     if start == None :
         stock_historical = stock.history(period=period, interval=interval)
     else:
         stock_historical = stock.history(start=start, end=end, interval=interval)
 
-    print(stock_historical)
-    plot_onecol(stock_historical, ticker, "Open", period, interval)
-    plot_onecol(stock_historical, ticker, "Close", period, interval)
+    #print(stock_historical)
+    #plot_onecol(stock_historical, ticker, "Open", period, interval)
+    #plot_onecol(stock_historical, ticker, "Close", period, interval)
     #plot_onecol(stock_historical, ticker, "High", period, interval)
     #plot_onecol(stock_historical, ticker, "Low", period, interval)
     return stock_historical
 
+def browse_values(historic, type=None):
+    """
+    Get the whole data set into a list of values, if a specific type is selected.
+    For instance, the "close" values, or the "open" values of that stock value.
+    """
+    if type != None:
+        y = pd.to_numeric(historic[type]) 
+        return y
+    print("alert: no value type selected (either 'Close' or 'Open')")
+    return 0
 
 def historic_pandas():
     """
@@ -115,22 +132,31 @@ def do_linreg():
     print("lin reg percentual slope: {}%".format( round(100*res.slope/y[0],2 )))
     plot_linregress(range(0,len(y)), y, res)
 
-def main(period="1m", interval="5d"):
+def main(period="1mo", interval="1d"):
 
-    ticks = ["ADA-USD",  "RIOT", "005930.KS", "PHIA.AS", "TSLA", "HMC", "LGL", "JUVE.MI", "MANU", "NVDA"]
+    ticks = ["ADA-USD",  "RIOT", "005930.KS", "PHIA.AS", "TSLA", "HMC", "LGL", "JUVE.MI", "MANU", "NVDA",
+             "1810.HK", "GOOG", "BTC-USD"]
+    ticks = ["RIOT"]
     print("my stocks:")
     for tick in ticks:
         stock = yfin.Ticker(tick)
         print("stock: {}, last price: {}".format(stock.info["longName"], stock.fast_info.last_price ))
-        historic_yfin(tick, period=period, interval=interval, start=None, end=None)
+        stock_historical = download_historic_yfin(tick, period=period, interval=interval, 
+                                                  start=None, end=None)
+        print("Historical")
+        print(stock_historical)
+        type = "Close"
+        stock_y = browse_values(stock_historical, type=type)
+        print("Printing {} values from {}".format(type, tick))
+        print(stock_y)
+        #plot_onecol(stock_historical, tick, "Open", period, interval)
+        #plot_onecol(stock_historical, tick, "Close", period, interval)
+        
+        print("1 - ECDF, printing how high up is this value: ")
+        fun = ecdf(stock_y)
+        print(fun(stock_y[-1]))
 
+        return stock_y
 
-
-    ticks = ["1810.HK", "GOOG", "BTC-USD"]
-    print("\ninterested in stocks:")
-    for tick in ticks:
-        stock = yfin.Ticker(tick)
-        print("stock: {}, last price: {}".format(stock.info["longName"], stock.fast_info.last_price ))
-        historic_yfin(tick, period=period, interval=interval, start=None, end=None)
 
 
