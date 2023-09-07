@@ -152,6 +152,22 @@ def process_block(body, srch, yh_all_sym, hdr):
         if result == -1:
             break
 
+def set_char_range(start_by="AG", seq = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"):
+    """
+    Aquesta funció te com a input dos caràcters que son o una lletra o un dígit, i tornen les lletres i numeros que falten per aribar
+    al final de la seqüència. La següència és ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789
+    """
+    ranges = []
+    n = len(seq)
+    for val in range(0,3) :
+        ind = seq.find(start_by[val])
+        rang = seq[ind:n]
+        rang = list(rang)
+
+        ranges.append(rang)
+
+    return(ranges)
+
 def main():
 
     # check that file of tickers doesn't exist, otherwise create a new one:
@@ -162,38 +178,33 @@ def main():
         ind+=1
         ticks_out_file="ticks_{}.csv".format(ind)
     
+    # ultims tickers que s'han buscat:
+    f=open("last_save_ticks.txt","r",encoding='UTF-8')
+    Lines = f.readlines()
+    ticks_group = Lines[0][0:3] # first two char of first line of the file contain the last used ticks group
+    f.close()
+    print("last used ticks: {}".format(ticks_group))
+    search_set = set_char_range(ticks_group) # els dos rangs de characters que falten per visitar els ticks
 
-    search_set = []
-    print(ord('0'), ord('9'), ord('A'), ord('Z'))
-
-    for x in range(65, 91):
-        search_set.append(chr(x))
-
-    for x in range(48, 58):
-        search_set.append(chr(x))
-
-    #print(search_set)
     yh_all_sym = {}
 
-    #sector_set = [ 'equity', 'mutualfund', 'etf', 'index', 'future', 'currency']
-    #sector_set = ['all']
-    term_1 = 0
-    term_2 = 0
-    term_3 = 0
 
-    for term_1 in search_set:
-        for term_2 in search_set:
-            search_term = term_1 + term_2
+    for term_1 in search_set[0]:
+        for term_2 in search_set[1]:
+            ticks_group = term_1 + term_2
+            f=open("last_save_ticks.txt","w",encoding='UTF-8')
+            f.write(ticks_group+search_set[2][0])        # now we write down the tick group we were last doing again, just to remeber ^^
+            f.close()
 
             url = "https://www.removepaywall.com/"
-            url = "https://finance.yahoo.com/lookup/all?s=" + search_term + "&t=A&b=0&c=25"
+            url = "https://finance.yahoo.com/lookup/all?s=" + ticks_group + "&t=A&b=0&c=25"
             print("calling URL: ", url)
 
             global hdr
             hdr["path"]=url
 
             body = call_url(url,hdr)
-            all_num = get_counts(body, search_term)
+            all_num = get_counts(body, ticks_group)
             print("counts: ")
             print(all_num)
             try:
@@ -201,27 +212,30 @@ def main():
             except:
                 return
 
-            print(search_term, 'Total:', all_num)
+            print(ticks_group, 'Total:', all_num)
 
             if all_num < 9000:
-                process_block(body, search_term, yh_all_sym,hdr)
+                process_block(body, ticks_group, yh_all_sym,hdr)
             else:
-                for term_3 in search_set:
-                    search_term = term_1 + term_2 + term_3
-                    url = "https://finance.yahoo.com/lookup/all?s=" + search_term + "&t=A&b=0&c=25"
+                for term_3 in search_set[2]:
+                    ticks_group = term_1 + term_2 + term_3
+                    f=open("last_save_ticks.txt","w",encoding='UTF-8')
+                    f.write(ticks_group)        # now we write down the tick group we were last doing again, just to remeber ^^
+                    f.close()
+                    url = "https://finance.yahoo.com/lookup/all?s=" + ticks_group + "&t=A&b=0&c=25"
                     hdr["path"] = url
 
                     body = call_url(url, hdr)
-                    all_num= get_counts(body, search_term)
+                    all_num= get_counts(body, ticks_group)
                     all_num = int(all_num)
-                    print(search_term, 'Total:', all_num)
+                    print(ticks_group, 'Total:', all_num)
 
                     if all_num < 9000:
-                        process_block(body, search_term, yh_all_sym,hdr)
+                        process_block(body, ticks_group, yh_all_sym,hdr)
                     else:
                         for term_4 in search_set:
-                            search_term = term_1 + term_2 + term_3 + term_4
-                            process_block(body, search_term, yh_all_sym, hdr)
+                            ticks_group = term_1 + term_2 + term_3 + term_4
+                            process_block(body, ticks_group, yh_all_sym, hdr)
 
 
     f=open("yhallsym.txt","w",encoding='UTF-8')
