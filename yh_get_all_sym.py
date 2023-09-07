@@ -172,6 +172,7 @@ def main():
 
     # check that file of tickers doesn't exist, otherwise create a new one:
     global ticks_out_file
+    seq_caracters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     ind = 1
     ticks_out_file="ticks_{}.csv".format(ind)
     while exists(ticks_out_file): # just iterate until you find a new filename such as ticks_25.csv
@@ -236,6 +237,9 @@ def main():
                         for term_4 in search_set:
                             ticks_group = term_1 + term_2 + term_3 + term_4
                             process_block(body, ticks_group, yh_all_sym, hdr)
+            
+            search_set[2] = seq_caracters # reset the characters for the third letter when loop 2 finishes an iteration
+        search_set[1] = seq_caracters # reset the characters for the second letter when first loop finishes an iteration
 
 
     f=open("yhallsym.txt","w",encoding='UTF-8')
