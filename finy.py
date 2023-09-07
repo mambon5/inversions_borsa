@@ -14,6 +14,12 @@ from scipy import stats
 # how to get data from yahoo.
 # check this tutorial > https://www.geeksforgeeks.org/get-financial-data-from-yahoo-finance-with-python/
 
+def get_ticker_names():
+    from get_all_tickers import get_tickers as gt
+
+    list_of_tickers = gt.get_tickers()
+    # or if you want to save them to a CSV file
+    return list_of_tickers
 
 def ecdf(data) :
     """
@@ -110,10 +116,17 @@ def simple_slope(historic, type="Open") :
     slope = y[-1]  - y[0]
     return slope
 
-def linreg_slope(historic, type="Open") :
-    y = pd.to_numeric(historic[type])   
+def linreg_slope(y) :
+    """
+    :param y: is a list of numerical values
+    """
     x = range(0,len(y))
     res = stats.linregress(x,y)
+    return res
+
+def linreg_from_hist(historic, type="Open") :
+    y = pd.to_numeric(historic[type])   
+    res = linreg_slope(y)
     # x= map(lambda a: a.strftime("%d/%m/%y"), x)
     return [y, res]
 
@@ -124,39 +137,65 @@ def plot_linregress(x, y, res):
     plt.show()
 
 def do_linreg():
-    historic = historic_yfin("RIOT", period="5d", interval="1d")
-    linreg = linreg_slope(historic, type="Open")
+    historic = download_historic_yfin("RIOT", period="5d", interval="1d")
+    linreg = linreg_from_hist(historic, type="Open")
     y = linreg[0]
     res = linreg[1]
     print("linear regression slope: {}".format(res.slope))
     print("lin reg percentual slope: {}%".format( round(100*res.slope/y[0],2 )))
     plot_linregress(range(0,len(y)), y, res)
 
-def main(period="1mo", interval="1d"):
+def main(period="1y", interval="1d"):
 
     ticks = ["ADA-USD",  "RIOT", "005930.KS", "PHIA.AS", "TSLA", "HMC", "LGL", "JUVE.MI", "MANU", "NVDA",
-             "1810.HK", "GOOG", "BTC-USD"]
-    ticks = ["RIOT"]
+             "1810.HK", "GOOG", "BTC-USD", "^GSPC", "^IXIC","^DJI","^GDAXI"]
+    #ticks = ticks[0:2] # getting just a few ticks to not consume all my internet data
     print("my stocks:")
     for tick in ticks:
         stock = yfin.Ticker(tick)
+        print("")
+        print("#############")
         print("stock: {}, last price: {}".format(stock.info["longName"], stock.fast_info.last_price ))
         stock_historical = download_historic_yfin(tick, period=period, interval=interval, 
                                                   start=None, end=None)
-        print("Historical")
-        print(stock_historical)
         type = "Close"
-        stock_y = browse_values(stock_historical, type=type)
-        print("Printing {} values from {}".format(type, tick))
-        print(stock_y)
-        #plot_onecol(stock_historical, tick, "Open", period, interval)
-        #plot_onecol(stock_historical, tick, "Close", period, interval)
+
+        # 1yr data:
+        stock_y_1yr = browse_values(stock_historical, type=type)
+        print("Printing {} values from {} for {}".format(type, tick, period))
+        print(stock_y_1yr)
         
         print("1 - ECDF, printing how high up is this value: ")
-        fun = ecdf(stock_y)
-        print(fun(stock_y[-1]))
+        fun = ecdf(stock_y_1yr)
+        print(fun(stock_y_1yr[-1]))
+        # trend in percentage wrt period mean:
+        trend_1yr = linreg_slope(stock_y_1yr)[0]/np.mean(stock_y_1yr)
+        print("{} trend in % wrt to mean value of period:".format( period))
+        print("{}%".format(round(100*trend_1yr,4)))
 
-        return stock_y
+        # 6mo data:
+        stock_y_6m = stock_y_1yr[list(range(int(len(stock_y_1yr)/2),len(stock_y_1yr)))]
+        print("Printing {} values from {} for {}".format(type, tick, "6mo"))        
+        print("1 - ECDF, printing how high up is this value: ")
+        fun = ecdf(stock_y_6m)
+        print(fun(stock_y_6m[-1]))
+        # trend:
+        trend_6mo = linreg_slope(stock_y_6m)[0]/np.mean(stock_y_6m)
+        print("{} trend in % wrt to mean value of period:".format( "6mo"))
+        print("{}%".format(round(100*trend_6mo,4)))
+
+        #trend 5d
+        stock_y_5d = stock_y_1yr[list(range(-5,0))]
+        trend_5d = linreg_slope(stock_y_5d)[0]/np.mean(stock_y_5d)
+        print("{} trend in % wrt to mean value of period:".format( "5d"))
+        print("{}%".format(round(100*trend_5d,4)))
+
+
+        
+
+
+
+    return stock_y_1yr
 
 
 
