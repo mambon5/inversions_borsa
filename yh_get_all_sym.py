@@ -45,10 +45,9 @@ def get_counts(body, srch):
     #print(count_end)
     count_all = rest[0: count_end]
     print(logging.info('Counts: ' + srch + ' ' + str(count_all)))
-    print("body length: {}".format(len(body)))
-    f = open("body.html", "w")
-    f.write(body)
-    f.close()
+    # f = open("body.html", "w")
+    # f.write(body)
+    # f.close()
     logging.info('Counts: ' + srch + ' ' + str(count_all))
 
     return count_all
