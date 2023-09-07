@@ -122,7 +122,7 @@ def extreu_tickers(text, posicions):
     for ind in posicions:
         third_cometes = stru.troba_nessim_repe(text[ind:-1],'"',3)  # necessitem agafar text fins les terceres cometes
         tick = stru.extreu_paraula(text[ind:(ind+third_cometes)])
-        if tick.find('=') == -1 and tick.find("^") == -1: # no agafem ni indexos ni errors
+        if tick.find('=') == -1 and tick.find("^") == -1 and tick not in tickers: # no agafem ni indexos ni errors ni repetim tickers, evidentment
             tickers.append(tick)
     return tickers
 
