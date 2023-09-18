@@ -1,3 +1,5 @@
+import sys
+
 """
 funcions per treballar amb cadenes de text o strings
 """
@@ -50,3 +52,5 @@ def extreu_paraula(frase, sep='"'):
     if len(inds) != 2:
         raise Exception("there must be only two double quotes surrounding the ticker! Otherwise the program can't find the ticker value!")  
     return(frase[ (inds[0]+1):inds[1]])
+
+

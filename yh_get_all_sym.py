@@ -1,8 +1,19 @@
 """
 Brute force program that downloads all tickers from yahoo. Takes a few hours to run.
 > https://github.com/mlapenna7/yh_symbol_universe/blob/main/yh_get_all_sym.py
-"""
 
+
+Checking why python program eats up so much memory:
+
+1. Rried to fix issue deleting all logging > didn't work
+2. Tried to inspect usingthe @profile function who eats the memory > couldnt find anything
+3. Tried to list at each loop iteration all the global/local variables and their size > they all stay the same
+4. Maybe its because of the print to the terminal I do? I closed the terminal to see if RAM decreased, it didn't. That is also not the issue
+5.
+6.
+
+"""
+import gc
 import requests
 import json
 #from array import array
@@ -11,31 +22,19 @@ import logging
 from os.path import exists
 
 #from html.parser import HTMLParser
-#import time
+import time
 import string_utils as stru
+import memory_utils as memu
 import numpy as np
+
+### tracing memory consumption to find why program breaks:
+from memory_profiler import profile
 
 
 logging.basicConfig(level=logging.DEBUG, filename='yh_get_all_sym.log',
     filemode='w', format='%(asctime)s - %(levelname)s - %(message)s')
 
-hdr = {
-    "authority": "finance.yahoo.com",
-    "method": "GET",
-    "scheme": "https",
-    "accept": "text/html",
-    "accept-encoding": "gzip, deflate, br",
-    "accept-language": "en-US,en;q=0.9",
-    "cache-control": "no-cache",
-    "dnt": "1",
-    "pragma": "no-cache",
-    "sec-fetch-mode": "navigate",
-    "sec-fetch-site": "same-origin",
-    "sec-fetch-user": "?1",
-    "upgrade-insecure-requests": "1",
-    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
-}
-
+# getting ammount of tickers found following the filter criteria: ...All (65) asdasdfasdf<dev>
 def get_counts(body, srch):
     count_beg = body.find('All (')
     #print(count_beg)
@@ -62,14 +61,22 @@ def get_dynamic_webcontent(url):
     s = HTMLSession()
     response = s.get(url)
     response.html.render()
-
-    f = open("body.html", "w")
-    f.write(response.text)
-    f.close()
-
+    # text = response.text
+    # f = open("body.html", "w")
+    # f.write(text)
+    # f.close()
+    # del f
+    del s
+    # del response
+    gc.collect()
     return response
 
-def call_url(url,hdr):
+# instantiating the decorator
+@profile
+# code for which memory has to
+# be monitored
+###
+def call_url(url):
     confirmed = False
 
 
@@ -87,10 +94,10 @@ def call_url(url,hdr):
         try:
             r = get_dynamic_webcontent(url)
             r.raise_for_status()
-
-            #if r.text.find('Something went wrong') > -1:
+            body = r.text
+            # if r.text.find('Something went wrong') > -1:
             #    logging.warning("Found:" + 'Something went wrong')
-            #else:
+            # else:
             confirmed = True
         except requests.exceptions.HTTPError as errh:
             print("Http Error:", errh)
@@ -114,7 +121,9 @@ def call_url(url,hdr):
     #f=open("yh_data/yhallsym.txt","w",encoding='UTF-8')
     #f.write( r.text )
     #f.close()
-    return r.text
+    del r
+    gc.collect()
+    return body
 
 def extreu_tickers(text, posicions):
     tickers = []
@@ -125,7 +134,7 @@ def extreu_tickers(text, posicions):
             tickers.append(tick)
     return tickers
 
-def process_one(body, srch, yh_all_sym):
+def process_one(body):
     # {"lookupData":{"start":0,"count":100,"total":100,"documents":
     patro_simbol=' data-symbol="'
     rep_indexs= stru.troba_vals(body,patro_simbol) # positions of all tickers
@@ -141,15 +150,27 @@ def process_one(body, srch, yh_all_sym):
     return 0
     
 
-def process_block(body, srch, yh_all_sym, hdr):
+def process_block(body, srch):
+    global turns # moves before function exits
     for block in range(0, 9999, 100):
+        if turns < 1:# delete this for production, just using to watch memory usage
+            break
+        else:
+            turns -=1
         url = "https://finance.yahoo.com/lookup/all?s=" + srch + "&t=A&b=" + str(block) + "&c=100"
         print('Processing: ', srch, block)
         logging.info('Processing: ' + srch + str(block))
-        body = call_url(url,hdr)
-        result = process_one(body, srch, yh_all_sym)
+        body = call_url(url)
+        result = process_one(body)
+        print("global vars:")
+        print(memu.get_vars_size(list(globals().items()))) # print size of all variables in python script
+        print("local vars 1:")
+        print(memu.get_vars_size(list(locals().items()))) # print size of all variables in python script
         if result == -1:
             break
+        del body
+        collected = gc.collect() # trying to free RAM memory
+        print("Garbage collector: collected %d objects." % (collected))
 
 def set_char_range(start_by="AG", seq = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"):
     """
@@ -167,8 +188,13 @@ def set_char_range(start_by="AG", seq = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"):
 
     return(ranges)
 
-def main():
 
+
+
+
+def main():
+    global turns # moves before function exits
+    turns=2
     # check that file of tickers doesn't exist, otherwise create a new one:
     global ticks_out_file
     seq_caracters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -183,27 +209,26 @@ def main():
     Lines = f.readlines()
     ticks_group = Lines[0][0:3] # first two char of first line of the file contain the last used ticks group
     f.close()
+    del f
     print("last used ticks: {}".format(ticks_group))
     search_set = set_char_range(ticks_group) # els dos rangs de characters que falten per visitar els ticks
 
-    yh_all_sym = {}
-
-
     for term_1 in search_set[0]:
         for term_2 in search_set[1]:
+            if turns < 1: # delete this for production, just using it to watch memory usage
+                return
             ticks_group = term_1 + term_2
             f=open("last_save_ticks.txt","w",encoding='UTF-8')
             f.write(ticks_group+search_set[2][0])        # now we write down the tick group we were last doing again, just to remeber ^^
             f.close()
-
+            del f
             url = "https://www.removepaywall.com/"
             url = "https://finance.yahoo.com/lookup/all?s=" + ticks_group + "&t=A&b=0&c=25"
             print("calling URL: ", url)
 
-            global hdr
-            hdr["path"]=url
+            # hdr["path"]=url
 
-            body = call_url(url,hdr)
+            body = call_url(url)
             all_num = get_counts(body, ticks_group)
             print("counts: ")
             print(all_num)
@@ -215,29 +240,39 @@ def main():
             print(ticks_group, 'Total:', all_num)
 
             if all_num < 9000:
-                process_block(body, ticks_group, yh_all_sym,hdr)
+                process_block(body, ticks_group)
+                print("local vars 2:")
+                print(memu.get_vars_size(list(locals().items()))) # print size of all variables in python script
+                del body
             else:
                 for term_3 in search_set[2]:
                     ticks_group = term_1 + term_2 + term_3
                     f=open("last_save_ticks.txt","w",encoding='UTF-8')
                     f.write(ticks_group)        # now we write down the tick group we were last doing again, just to remeber ^^
                     f.close()
+                    del f
                     url = "https://finance.yahoo.com/lookup/all?s=" + ticks_group + "&t=A&b=0&c=25"
-                    hdr["path"] = url
+                    # hdr["path"] = url
 
-                    body = call_url(url, hdr)
+                    body = call_url(url)
                     all_num= get_counts(body, ticks_group)
                     all_num = int(all_num)
                     print(ticks_group, 'Total:', all_num)
 
                     if all_num < 9000:
-                        process_block(body, ticks_group, yh_all_sym,hdr)
+                        process_block(body, ticks_group)
+                        del body
                     else:
-                        for term_4 in search_set:
+                        for term_4 in seq_caracters:
                             ticks_group = term_1 + term_2 + term_3 + term_4
-                            process_block(body, ticks_group, yh_all_sym, hdr)
+                            process_block(body, ticks_group)
+                            del body
+                    
+                                                        
             
             search_set[2] = seq_caracters # reset the characters for the third letter when loop 2 finishes an iteration
+
+            
         search_set[1] = seq_caracters # reset the characters for the second letter when first loop finishes an iteration
 
 
