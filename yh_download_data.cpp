@@ -9,15 +9,68 @@ using namespace std;
 #include <ctime>
 #include <chrono>
 #include <thread>
+#include <string.h>
+
 
 #include <curl/curl.h>
-// compile by the command: g++ -o sms ./src/sms.o -lcurl
+// compile by the command: g++ yh_download_data.cpp -o prova -lcurl
 
 // to do in the code:
 // 1. process by block
 // 2.
 // 3. 
 
+
+// int sortarray(const vector<string>& paraules) {
+//     // Create a character array "paraules" of size 10 and character value 15.
+    
+//     // Create another array “arr” of data type string, and the value of '10' is set as a character value.
+//     int n = size(paraules);
+//     for (int x = 0; x < n; x++) {
+//         int m = size(paraules[x]);
+//         for (int y = 1; y < m; y++) {
+//             const char* par11 = paraules[y].c_str();
+//             const char* par22 = paraules[y-1].c_str();
+//             int len1 = size(par11);
+//             int len2 = size(par22);
+//             char par1[len1];
+//             char par2[len2];
+//             int maxi = max(size(par1), size(par2));
+//             char arr[maxi];
+//             if (strcmp(par2, par1) > 0) {
+//                 strcpy(arr, par2);
+//                 strcpy(par2, par1);
+//                 strcpy(par1, arr);
+//             }
+
+//         }
+//     }
+//     cout << "\nAlphabetical order of parauless :\n";
+//     for (int x = 0; x < 10; x++)
+//         cout << paraules[x] << endl;
+//     cout << endl;
+//     return 0;
+
+// }
+
+bool compareStrings(const std::string& str1, const std::string& str2) {
+  return str1 < str2;
+}
+
+void sortarray(vector<string>& arrayDeStrings) {
+    // Ejemplo de un array de strings
+    // std::vector<std::string> arrayDeStrings = {"baababa","zzz", "abc", "aaaaa", "xyz", "def"};
+
+    // Ordenar el array utilizando la función compareStrings como criterio de ordenamiento
+    std::sort(arrayDeStrings.begin(), arrayDeStrings.end(), compareStrings);
+
+    // Imprimir el array ordenado
+    // std::cout << "Array ordenado:" << std::endl;
+    // for (const auto& str : arrayDeStrings) {
+    //     std::cout << str << " ";
+    // }
+
+}
 
 string DownloadWebBody(const string& url) {
     CURL *curl = curl_easy_init();
@@ -100,16 +153,30 @@ vector<string> ExtractTickers(const string& content) {
     return tickers;
 }
 
-void WriteToFile(const vector<string>& tickers, const string& outputFile) {
-    
+void WriteToFileSimple( const string& output, const string& outputFile) {
     ofstream outFile;
-
     outFile.open(outputFile, ios_base::app); // append instead of overwrite
     if (!outFile.is_open()) {
         cerr << "Failed to open the output file: " << outputFile << endl;
         return;
     }
+    cout << "writing output to ouput file: " << outputFile << endl;
+    outFile << output << endl;
+    outFile.close();
+}
+
+void WriteToFile(const vector<string>& tickers, const string& outputFile) {
+    
+    ofstream outFile;
+    outFile.open(outputFile, ios_base::app); // append instead of overwrite
+    if (!outFile.is_open()) {
+        cerr << "Failed to open the output file: " << outputFile << endl;
+        return;
+    }
+    cout << "writing output to ouput file: " << outputFile << endl;
     cout << "there are " << size(tickers) << " tickers:" << endl;
+    // int len = sizeof(tickers)/sizeof(tickers[0]);
+    // tickers = sort(tickers.begin(), tickers.end());
     // Write tickers to the output file
     for (const string& ticker : tickers) {
         cout << ticker << ", ";
@@ -128,18 +195,22 @@ int CountTickers(const string& body, const string& ticks_group) {
     return int_all;
 }
 
-void ProcessBlock(const string baseUrl, const string searchGroup) {
+void ProcessBlock(const string baseUrl, const string searchGroup, const string outputFile) {
     string url = baseUrl + searchGroup + "&t=A&b=0&c=100";
 
     cout << "looking for html content from url: " << url << endl;
     string webContent = DownloadWebContent(url);
+    WriteToFileSimple(webContent, "body2.html");
+    
     vector<string> tickers = ExtractTickers(webContent);
+    sortarray(tickers);
     WriteToFile(tickers, outputFile);
 }
 
 int main() {
     string baseUrl = "https://finance.yahoo.com/lookup/all?s=";
     string outputFile = "tickers.csv";
+
 
     // Generate a sequence of characters (e.g., A, B, ..., Z, 0, 1, ..., 9)
     string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -148,7 +219,7 @@ int main() {
     for (char char1 : characters) {
         for (char char2 : characters) {
             string searchGroup = {char1, char2};
-            ProcessBlock(baseUrl, searchGroup)
+            ProcessBlock(baseUrl, searchGroup, outputFile);
             
 
             // Introduce a delay between requests (e.g., 1 second)

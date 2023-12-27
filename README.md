@@ -29,6 +29,7 @@ python3 yh_get_all_sym.py
 
 5. Si durant l'execució del programa, hi ha algun error de conexió o el servidor de yahoo cancela la demanada, el software guarda automàticament l'últim grup de tickers on us havíeu quedat i torna a començar la descàrrega en l'últim punt i no repeteix la feina. Així que tranquiles, és normal que falli el programa i hagueu d'executar-lo més d'un cop per descarregar tots els tickers de yahoo.
 
+6. araho estemprovant amb cpp per anar més ràpid
 ## Altres arxius inclosos
 
 Incloc tots els arxius que he anat generant al executar el programa, hi ha molts tickers ja descarregats i guardats en format .csv per si voleu usar-los ja. 
