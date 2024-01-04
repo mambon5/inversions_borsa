@@ -28,7 +28,7 @@ import memory_utils as memu
 import numpy as np
 
 ### tracing memory consumption to find why program breaks:
-from memory_profiler import profile
+# from memory_profiler import profile
 
 
 logging.basicConfig(level=logging.DEBUG, filename='yh_get_all_sym.log',
@@ -43,11 +43,11 @@ def get_counts(body, srch):
     count_end = rest.find(')')
     #print(count_end)
     count_all = rest[0: count_end]
-    print(logging.info('Counts: ' + srch + ' ' + str(count_all)))
+    # print(logging.info('Counts: ' + srch + ' ' + str(count_all)))
     # f = open("body.html", "w")
     # f.write(body)
     # f.close()
-    logging.info('Counts: ' + srch + ' ' + str(count_all))
+    # logging.info('Counts: ' + srch + ' ' + str(count_all))
 
     return count_all
 
@@ -72,7 +72,7 @@ def get_dynamic_webcontent(url):
     return response
 
 # instantiating the decorator
-@profile
+# @profile
 # code for which memory has to
 # be monitored
 ###
@@ -153,19 +153,19 @@ def process_one(body):
 def process_block(body, srch):
     global turns # moves before function exits
     for block in range(0, 9999, 100):
-        if turns < 1:# delete this for production, just using to watch memory usage
-            break
-        else:
-            turns -=1
+        # if turns < 1:# delete this for production, just using to watch memory usage
+        #     break
+        # else:
+        #     turns -=1
         url = "https://finance.yahoo.com/lookup/all?s=" + srch + "&t=A&b=" + str(block) + "&c=100"
         print('Processing: ', srch, block)
-        logging.info('Processing: ' + srch + str(block))
+        # logging.info('Processing: ' + srch + str(block))
         body = call_url(url)
         result = process_one(body)
-        print("global vars:")
-        print(memu.get_vars_size(list(globals().items()))) # print size of all variables in python script
-        print("local vars 1:")
-        print(memu.get_vars_size(list(locals().items()))) # print size of all variables in python script
+        # print("global vars:")
+        # print(memu.get_vars_size(list(globals().items()))) # print size of all variables in python script
+        # print("local vars 1:")
+        # print(memu.get_vars_size(list(locals().items()))) # print size of all variables in python script
         if result == -1:
             break
         del body
@@ -215,8 +215,8 @@ def main():
 
     for term_1 in search_set[0]:
         for term_2 in search_set[1]:
-            if turns < 1: # delete this for production, just using it to watch memory usage
-                return
+            # if turns < 1: # delete this for production, just using it to watch memory usage
+            #     return
             ticks_group = term_1 + term_2
             f=open("last_save_ticks.txt","w",encoding='UTF-8')
             f.write(ticks_group+search_set[2][0])        # now we write down the tick group we were last doing again, just to remeber ^^
@@ -241,8 +241,8 @@ def main():
 
             if all_num < 9000:
                 process_block(body, ticks_group)
-                print("local vars 2:")
-                print(memu.get_vars_size(list(locals().items()))) # print size of all variables in python script
+                # print("local vars 2:")
+                # print(memu.get_vars_size(list(locals().items()))) # print size of all variables in python script
                 del body
             else:
                 for term_3 in search_set[2]:
