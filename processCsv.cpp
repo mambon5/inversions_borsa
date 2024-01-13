@@ -56,7 +56,7 @@ int main() {
     vector<string> ticks;
     ticks = getNextLineAndSplit(file);
     // OutputVector(ticks);
-    WriteToFile(ticks, "processed_ticks.csv")
+    WriteToFile(ticks, "processed_ticks.csv");
 
 
 }
