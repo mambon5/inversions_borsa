@@ -160,6 +160,15 @@ bool StringInVector(const string& ticker, const vector<string>& tickers) {
     return find(begin(tickers), end(tickers), ticker) != end(tickers);
 }
 
+void LenghtOfVector(const vector<string>& tickers) {
+    int n = 0;
+    for(string str : tickers) {
+        n++;
+    }
+    cout << endl;
+    cout << "length of vector is: " << to_string(n) << endl;
+
+}
 
 
 void OutputVector( const vector<string>& tickers) {
@@ -274,3 +283,58 @@ int getLastFileNumber() {
    return lastn;
 }
 
+vector<string> readCsv(const string& filename)
+{
+    vector<string>   result;
+    string                line;
+    ifstream file(filename);
+    
+    while(getline(file,line)) {
+
+        stringstream          lineStream(line);
+        string                cell;
+
+        while(getline(lineStream,cell, ','))
+        {
+                result.push_back(cell);
+     
+        }
+        // This checks for a trailing comma with no data after it.
+        if (!lineStream && cell.empty())
+        {
+            // If there was a trailing comma then add nothing
+        }
+    }
+    return result;
+}
+
+vector<string> CsvFilterDuplicates(const string& filename)
+{
+    vector<string>   result;
+    string                line;
+    ifstream file(filename);
+    int repeated = 0;
+    
+    while(getline(file,line)) {
+
+        stringstream          lineStream(line);
+        string                cell;
+
+        while(getline(lineStream,cell, ','))
+        {
+            if(!StringInVector(cell, result)) {
+                result.push_back(cell);
+            }
+            else {
+                repeated++;
+            }
+        }
+        // This checks for a trailing comma with no data after it.
+        if (!lineStream && cell.empty())
+        {
+            // If there was a trailing comma then add nothing
+        }
+    }
+    cout << to_string(repeated) << " repetitions deleted." << endl;
+    return result;
+}

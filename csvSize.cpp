@@ -19,14 +19,13 @@ using namespace std;
 #include "textProcess.h"
 
 
+
 int main() {
-    cout << "type the name of the file you want to process the tickers: " << endl;
+    cout << "type the name of a csv file: " << endl;
     string file;
     cin >> file;
     vector<string> ticks;
-    ticks = CsvFilterDuplicates(file);
-    // OutputVector(ticks);
-    WriteToFile(ticks, "processed_ticks.csv");
-
+    ticks = readCsv(file);
+    LenghtOfVector(ticks);
 
 }
