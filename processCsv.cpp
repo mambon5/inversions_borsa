@@ -16,30 +16,37 @@ using namespace std;
 
 
 #include <curl/curl.h>
+#include "textProcess.h"
 
 vector<string> getNextLineAndSplit(const string& filename)
 {
     vector<string>   result;
     string                line;
     ifstream file(filename);
-    getline(file,line);
+    
+    while(getline(file,line)) {
 
-    stringstream          lineStream(line);
-    string                cell;
+        stringstream          lineStream(line);
+        string                cell;
 
-    while(getline(lineStream,cell, ','))
-    {
-        result.push_back(cell);
-    }
-    // This checks for a trailing comma with no data after it.
-    if (!lineStream && cell.empty())
-    {
-        // If there was a trailing comma then add an empty element.
-        result.push_back("");
+        while(getline(lineStream,cell, ','))
+        {
+            result.push_back(cell);
+        }
+        // This checks for a trailing comma with no data after it.
+        if (!lineStream && cell.empty())
+        {
+            // If there was a trailing comma then add nothing
+        }
     }
     return result;
 }
 
 int main() {
+    string file = "tickers_5.csv";
+    vector<string> ticks;
+    ticks = getNextLineAndSplit(file);
+    OutputVector(ticks);
+
 
 }
