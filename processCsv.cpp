@@ -23,6 +23,7 @@ vector<string> getNextLineAndSplit(const string& filename)
     vector<string>   result;
     string                line;
     ifstream file(filename);
+    int repeated = 0;
     
     while(getline(file,line)) {
 
@@ -31,7 +32,12 @@ vector<string> getNextLineAndSplit(const string& filename)
 
         while(getline(lineStream,cell, ','))
         {
-            result.push_back(cell);
+            if(!StringInVector(cell, result)) {
+                result.push_back(cell);
+            }
+            else {
+                repeated++;
+            }
         }
         // This checks for a trailing comma with no data after it.
         if (!lineStream && cell.empty())
@@ -39,14 +45,18 @@ vector<string> getNextLineAndSplit(const string& filename)
             // If there was a trailing comma then add nothing
         }
     }
+    cout << to_string(repeated) << " repetitions deleted." << endl;
     return result;
 }
 
 int main() {
-    string file = "tickers_5.csv";
+    cout << "type the name of the file you want to process the tickers: " << endl;
+    string file;
+    cin >> file;
     vector<string> ticks;
     ticks = getNextLineAndSplit(file);
-    OutputVector(ticks);
+    // OutputVector(ticks);
+    WriteToFile(ticks, "processed_ticks.csv")
 
 
 }
